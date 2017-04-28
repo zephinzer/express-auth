@@ -199,6 +199,8 @@ To initialize the test environment, you can run the following command:
 # npm run dev:setup
 ```
 
+This will set up the SQLite3 database, create a public/private key pair for the tests to use, and create and run database migrations.
+
 ## Running Tests
 You will need to run the above command to set up the test environment before the tests will work as expected!
 
@@ -233,5 +235,8 @@ To test and watch a single file, you can run:
 ```bash
 # npm run test:watch:this -- /path/to/file
 ```
+
+### Coverage
+Coverage files will be generated in `/coverage`.
 
 More notes on contributing coming soon!
