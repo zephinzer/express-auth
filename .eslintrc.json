@@ -1,0 +1,15 @@
+{
+	"parserOptions": {
+		"ecmaVersion": 5,
+		"sourceType": "module"
+	},
+	"extends": [
+		"google"
+	],
+	"rules": {
+		"brace-style": ["off", "stroustrup", { "allowSingleLine": true }],
+		"max-len": ["warn", 127],
+		"no-invalid-this": ["off"],
+		"no-var": "off"
+	}
+}

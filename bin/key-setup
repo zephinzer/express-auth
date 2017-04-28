@@ -1,0 +1,9 @@
+#!/bin/sh
+
+printf '[expressAuth] ------------------------------------\n';
+printf "[expressAuth] PWD @ `pwd`\n"
+printf '[expressAuth] Generating private/public keypair...\n';
+printf '[expressAuth] ------------------------------------\n\n';
+mkdir config
+openssl genrsa -out config/key.priv 4096
+openssl rsa -in config/key.priv -pubout -out config/key.pub

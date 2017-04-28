@@ -1,0 +1,6 @@
+coverage
+config
+data
+node_modules
+sequelize
+test

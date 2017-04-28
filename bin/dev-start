@@ -1,0 +1,8 @@
+#!/bin/sh
+
+./bin/db-setup
+./bin/model-setup
+./bin/sequelize-setup-account
+./bin/sequelize-config-up.js
+./bin/sequelize-migrate
+./bin/key-setup

@@ -1,0 +1,3 @@
+#!/bin/sh
+
+npm run sequelize -- model:create --name=Account --attributes=email:string,password:string,nonce_token:string,session_token:string

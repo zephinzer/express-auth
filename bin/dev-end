@@ -1,0 +1,11 @@
+#!/bin/sh
+
+rm -rf coverage
+rm -rf config
+rm -rf data
+rm -rf sequelize/models
+mkdir sequelize/models
+rm -rf sequelize/migrations
+mkdir sequelize/migrations
+rm -rf sequelize/seeders
+mkdir sequelize/seeders

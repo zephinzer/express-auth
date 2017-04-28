@@ -1,0 +1,7 @@
+#!/bin/sh
+
+mkdir data;
+printf '[expressAuth] ---------------------------------------------------\n';
+printf '[expressAuth] Type in '.databases' into the sqlite> prompt below:\n';
+printf '[expressAuth] --------------------------x--------------------------\n\n';
+cat bin/db-setup.sql | sqlite3 data/main.db;
