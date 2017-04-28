@@ -7,8 +7,9 @@
 
 module.exports = function() {
 	var methods = {};
-	for(var keyIndex = 0; keyIndex < this.keys.length; ++keyIndex) {
-		methods[this.keys[keyIndex]] = 'get';
-	}
+  var keysKeys = Object.keys(this.keys);
+  keysKeys.forEach(function(key) {
+    methods[key] = 'get';
+  });
 	return methods;
 };

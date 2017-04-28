@@ -10,12 +10,12 @@
  */
 
 module.exports = function() {
-	return [
-		'access',
-		'login',
-		'logout',
-		'forgot',
-		'register',
-		'verify',
-	];
+	return {
+		access: 'access',
+		login: 'login',
+		logout: 'logout',
+		forgot: 'forgot',
+		register: 'register',
+		verify: 'verify',
+  };
 };
