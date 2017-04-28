@@ -1,6 +1,7 @@
 coverage
 config
 data
+examples
 node_modules
 sequelize
 test
