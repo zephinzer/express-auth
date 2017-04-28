@@ -185,6 +185,14 @@ target more platforms.
 Fork this repo, create your stuff and issue a pull request(:
 
 ## Getting Started
+Clone the repo locally.
+
+To install dependencies, use yarn install:
+
+```bash
+# yarn install
+```
+
 To initialize the test environment, you can run the following command:
 
 ```bash
