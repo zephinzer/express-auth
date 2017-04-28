@@ -1,7 +1,7 @@
 {
   "name": "express-auth",
   "version": "0.1.0",
-  "description": "Authentication module for Express that provides endpoints for a given route",
+  "description": "Authentication module for Express that provides endpoints for a given route.",
   "main": "index.js",
   "scripts": {
     "eslint": "eslint .",

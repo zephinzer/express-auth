@@ -5,7 +5,10 @@ rm -rf config
 rm -rf data
 rm -rf sequelize/models
 mkdir sequelize/models
+touch sequelize/models/empty
 rm -rf sequelize/migrations
 mkdir sequelize/migrations
+touch sequelize/migrations/empty
 rm -rf sequelize/seeders
 mkdir sequelize/seeders
+touch sequelize/seeders/empty
