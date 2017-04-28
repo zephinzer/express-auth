@@ -3,10 +3,10 @@
 ExpressAuth is a simplicity inspired RESTful Express middleware to handle authentication
 features. It's still a work in progress so hang on for the published version!
 
-To install it, use `npm`:
+To install it for use, use `npm`:
 
 ```bash
-# npm install express-authy
+# npm install express-authy --save
 ```
 
 Alternative with `yarn`:
