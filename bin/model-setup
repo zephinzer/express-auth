@@ -1,0 +1,8 @@
+#!/bin/sh
+
+mkdir sequelize
+sequelize init \
+	--config test/sequelize.json \
+	--migrations-path sequelize/migrations \
+	--seeders-path sequelize/seeders \
+	--models-path sequelize/models
