@@ -6,13 +6,13 @@ features. It's still a work in progress so hang on for the published version!
 To install it, use `npm`:
 
 ```bash
-# npm install express-auth
+# npm install express-authy
 ```
 
 Alternative with `yarn`:
 
 ```bash
-# yarn add express-auth
+# yarn add express-authy
 ```
 
 You can then use the `express-auth` library as follows:
