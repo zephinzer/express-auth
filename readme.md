@@ -144,7 +144,7 @@ The options are defined with a tree structure. The `.get()` and `.set()` methods
 
 Using `.get(['a', 'b', 'c'])` will return `"d"`.
 
-Using `.get(['h'])` will return `3`.
+Using `.get(['h'])` will return `2`.
 
 Using `.set(['a', 'b', 'e', 'f'], 4)` will set the `0` to `4`.
 
