@@ -535,3 +535,16 @@ To test and watch a single file, you can run:
 Coverage files will be generated in `/coverage`.
 
 More notes on contributing coming soon!
+
+# Changelog
+
+## v0 (pre-release)
+
+### 0.1.1
+
+- code refactor
+- documentation updates
+
+### 0.1.0
+
+- initial commit
