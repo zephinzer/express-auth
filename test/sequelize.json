@@ -1,6 +1,7 @@
 {
   "development": {
     "storage": "./data/main.db",
+    "logging": false,
     "dialect": "sqlite"
   },
   "test": {
