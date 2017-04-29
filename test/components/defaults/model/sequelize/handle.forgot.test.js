@@ -8,7 +8,7 @@ describe('expressAuth/Defaults/model/sequelize/handle .forgot ( id : {Number} )'
   var sequelize;
   var sequelizeConfig = ExpressAuth.get(['model', 'sequelize', 'config']);
   var names = ExpressAuth.get(['model', 'sequelize', 'config', 'names']);
-
+  var Account;
   var expectedAccount = {
     [names.columnEmail]: 'handle.forgot.test@address.com',
     [names.columnPassword]: 'password',
@@ -25,6 +25,7 @@ describe('expressAuth/Defaults/model/sequelize/handle .forgot ( id : {Number} )'
       Tokenizer.pbkdf2.create(expectedAccount[names.columnPassword]),
       expectedAccount[names.columnNonce]
     ).then(function(account) {
+      Account = factory.accountModel.get();
       expectedAccount.id = account.id;
       done();
     }).catch(done);

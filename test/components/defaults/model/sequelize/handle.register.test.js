@@ -1,5 +1,8 @@
 var Sequelize = require('sequelize');
 var ExpressAuth = require('../../../../../');
+var Tokenizer = require('../../../../../components/tokenizer');
+
+var factory = require('../../../../factory');
 
 describe('expressAuth/Defaults/model/sequelize/handle .register ( email : String, password : String, callback : Function )', function() {
   var sequelize;
@@ -16,27 +19,19 @@ describe('expressAuth/Defaults/model/sequelize/handle .register ( email : String
   );
 
   before(function(done) {
-    ExpressAuth.set(['model', 'sequelize', 'config', 'extraColumns'], {
-      createdAt: {type: Sequelize.DATE, defaultValue: Sequelize.NOW},
-      updatedAt: {type: Sequelize.DATE, defaultValue: Sequelize.NOW},
-    });
-    sequelize = new Sequelize(sequelizeConfig.get());
-    sequelize.authenticate().then(function() {
-      Account = sequelizeConfig.model(sequelize);
-      Account.create(expectedAccount)
-        .then(function(res) {
-          var accountId = res.dataValues.id;
-          expectedAccount.id = accountId;
-          done();
-        })
-        .catch(function(err) { done(err); });
-    }).catch(function(err) { done(err); });
+    factory.create.account(
+      expectedAccount[names.columnEmail],
+      Tokenizer.pbkdf2.create(expectedAccount[names.columnPassword]),
+      expectedAccount[names.columnNonce]
+    ).then(function(account) {
+      Account = factory.accountModel.get();
+      expectedAccount.id = account.id;
+      done();
+    }).catch(done);
   });
 
   after(function(done) {
-    Account.destroy({where: expectedAccount})
-      .then(function(res) { done(); })
-      .catch(function(err) { done(err); });
+    factory.destroy.account(expectedAccount.email).then(done).catch(done);
   });
 
   it('returns the newly created account in then() if registration succeeded', function(done) {

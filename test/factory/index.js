@@ -32,6 +32,11 @@ function getDatabase() {
 }
 
 module.exports = {
+  accountModel: {
+    get: function() {
+      return Account;
+    },
+  },
   create: {
     account: function(email, password, nonceToken, sessionToken) {
       var q = Q.defer();
