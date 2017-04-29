@@ -9,7 +9,7 @@ module.exports = function(_config) {
 	var slug = {};
   var keysKeys = Object.keys(config.keys);
   keysKeys.forEach(function(key) {
-    slug[key] = key;
+    slug[config.keys[key]] = key;
   });
 	return slug;
 };

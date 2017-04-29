@@ -5,11 +5,12 @@
  * keys.js file.
  */
 
-module.exports = function() {
+module.exports = function(_config) {
+  var config = _config || this;
 	var methods = {};
-  var keysKeys = Object.keys(this.keys);
+  var keysKeys = Object.keys(config.keys);
   keysKeys.forEach(function(key) {
-    methods[key] = 'get';
+    methods[config.keys[key]] = 'get';
   });
 	return methods;
 };

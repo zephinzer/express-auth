@@ -12,21 +12,22 @@ var registerHandler = require('./register');
 var forgotHandler = require('./forgot');
 var verifyHandler = require('./verify');
 
-module.exports = function() {
+module.exports = function(_config) {
+  var config = _config || this;
 	return {
 		after: {
-			access: null,
-			login: null,
-			logout: null,
-			register: null,
-			verify: null,
-			forgot: null,
+			[config.keys.access]: null,
+			[config.keys.login]: null,
+			[config.keys.logout]: null,
+			[config.keys.register]: null,
+			[config.keys.verify]: null,
+			[config.keys.forgot]: null,
 		},
-		access: (accessHandler).bind(this),
-		login: (loginHandler).bind(this),
-		register: (registerHandler).bind(this),
-		logout: (logoutHandler).bind(this),
-		forgot: (forgotHandler).bind(this),
-		verify: (verifyHandler).bind(this),
+		[config.keys.access]: (accessHandler).bind(this),
+		[config.keys.login]: (loginHandler).bind(this),
+		[config.keys.register]: (registerHandler).bind(this),
+		[config.keys.logout]: (logoutHandler).bind(this),
+		[config.keys.forgot]: (forgotHandler).bind(this),
+		[config.keys.verify]: (verifyHandler).bind(this),
 	};
 };
