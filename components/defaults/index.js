@@ -18,6 +18,7 @@ var defaultOptions = require('./options');
 var defaultToken = require('./token');
 
 var defaults = {};
+defaults.options = defaultOptions.bind(defaults)();
 defaults.keys = defaultKeys();
 defaults.slug = defaultSlugs.bind(defaults)();
 defaults.method = defaultMethods.bind(defaults)();
@@ -25,7 +26,6 @@ defaults.model = defaultModel.bind(defaults)();
 defaults.handlers = defaultHandlers.bind(defaults)();
 defaults.params = defaultParams.bind(defaults)();
 defaults.secret = defaultSecret.bind(defaults)();
-defaults.options = defaultOptions.bind(defaults)();
 defaults.token = defaultToken.bind(defaults)();
 
 module.exports = defaults;

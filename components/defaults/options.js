@@ -10,5 +10,6 @@ module.exports = function() {
 		modelStrategy: 'sequelize',
     secretStrategy: 'symmetric',
 		tokenStrategy: 'jwt',
+    nonceTokenLength: 32,
 	};
 };

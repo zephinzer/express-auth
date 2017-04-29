@@ -9,37 +9,41 @@ var Sequelize = require('sequelize');
 
 var Tokenizer = require('../../../tokenizer');
 
-var config = {
-  extraColumns: {},
-  get: function() {
-    var environment = process.env.NODE_ENV || 'development';
-    var configSet = require(path.join(process.cwd(), '/', this.path));
-    return configSet[environment];
-  },
-  path: './sequelize.json',
-  model: function(sequelize, _config) {
-    var config = this || _config;
-    var additionalColumnKeys = Object.keys(config.extraColumns);
-    var tableConfiguration = additionalColumnKeys.reduce(function(prev, curr, index) {
-      return Object.assign(prev, {[curr]: config.extraColumns[curr]});
-    }, {});
-    Object.keys(config.names).reduce(function(prev, curr) {
-      return Object.assign(prev, {[config.names[curr]]: Sequelize.STRING});
-    }, tableConfiguration);
-    return sequelize.define('Account', tableConfiguration, {
-      timestamps: false,
-      freezeTableName: true,
-      tableName: config.table,
-      version: false,
-    });
-  },
-  names: {
-    columnEmail: 'email',
-    columnPassword: 'password',
-    columnNonce: 'nonce_token',
-    columnSession: 'session_token',
-  },
-  table: 'Accounts',
+function getSequelizeConfig(_config) {
+  var config = _config || this;
+  return {
+    extraColumns: {},
+    get: function() {
+      var environment = process.env.NODE_ENV || 'development';
+      var configSet = require(path.join(process.cwd(), '/', this.path));
+      return configSet[environment];
+    },
+    path: './sequelize.json',
+    model: function(sequelize, _config) {
+      var config = this || _config;
+      var additionalColumnKeys = Object.keys(config.extraColumns);
+      var tableConfiguration = additionalColumnKeys.reduce(function(prev, curr, index) {
+        return Object.assign(prev, {[curr]: config.extraColumns[curr]});
+      }, {});
+      Object.keys(config.names).reduce(function(prev, curr) {
+        return Object.assign(prev, {[config.names[curr]]: Sequelize.STRING});
+      }, tableConfiguration);
+      return sequelize.define('Account', tableConfiguration, {
+        timestamps: false,
+        freezeTableName: true,
+        tableName: config.table,
+        version: false,
+      });
+    },
+    names: {
+      columnEmail: 'email',
+      columnPassword: 'password',
+      columnNonce: 'nonce_token',
+      columnSession: 'session_token',
+    },
+    table: 'Accounts',
+    nonceLength: config.options.nonceTokenLength,
+  };
 };
 
 function handleWrapper(handler) {
@@ -56,11 +60,12 @@ function handleWrapper(handler) {
   return q.promise;
 };
 
-module.exports = function() {
+module.exports = function(_config) {
+  var config = _config || this;
 	return {
-    config: config,
+    config: getSequelizeConfig.bind(config)(),
     handle: {
-      access: function(token) {
+      [config.keys.access]: function(token) {
         return handleWrapper.bind(this)((function(model, successHandler) {
           return model.findAll({where: {[this.names.columnNonce]: token}})
             .then(function(accounts) {
@@ -69,7 +74,7 @@ module.exports = function() {
             });
         }).bind(this));
       },
-      login: function(email, password) {
+      [config.keys.login]: function(email, password) {
         return handleWrapper.bind(this)((function(model, successHandler) {
           return model.findAll({where: {[this.names.columnEmail]: email}})
             .then((function(accounts) {
@@ -77,7 +82,7 @@ module.exports = function() {
               if(accounts.length === 0) { successHandler(false); }
               var targetAccount = accounts[0].dataValues;
               var targetAccountId = targetAccount.id;
-              var generatedToken = Tokenizer.random.generateString(32);
+              var generatedToken = Tokenizer.random.generateString(this.nonceLength);
               var accountSelectorObject = {where: {id: targetAccountId}};
               if(password) {
                 var targetAccountPasswordHash = targetAccount[this.names.columnPassword];
@@ -101,7 +106,7 @@ module.exports = function() {
             }).bind(this));
         }).bind(this));
       },
-      logout: function(id) {
+      [config.keys.logout]: function(id) {
         return handleWrapper.bind(this)((function(model, successHandler) {
           return model.update({
               [this.names.columnNonce]: null,
@@ -112,7 +117,7 @@ module.exports = function() {
             });
         }).bind(this));
       },
-      register: function(email, password, _otherInfo) {
+      [config.keys.register]: function(email, password, _otherInfo) {
         return handleWrapper.bind(this)((function(model, successHandler) {
           var otherInfo = _otherInfo || {};
           var accountObject = Object.keys(otherInfo).reduce(function(prev, curr) {
@@ -120,7 +125,7 @@ module.exports = function() {
           }, {
             [this.names.columnEmail]: email,
             [this.names.columnPassword]: password,
-            [this.names.columnNonce]: Tokenizer.random.generateString(8),
+            [this.names.columnNonce]: Tokenizer.random.generateString(this.nonceLength),
           });
           return model.create(accountObject)
             .then(function(account) {
@@ -128,7 +133,7 @@ module.exports = function() {
             });
         }).bind(this));
       },
-      verify: function(token) {
+      [config.keys.verify]: function(token) {
         return handleWrapper.bind(this)((function(model, successHandler) {
           return model.findAll({where: {[this.names.columnNonce]: token}})
             .then((function(accounts) {
@@ -145,11 +150,17 @@ module.exports = function() {
             }).bind(this));
         }).bind(this));
       },
-      forgot: function(email) {
+      [config.keys.forgot]: function(email) {
         return handleWrapper.bind(this)((function(model, successHandler) {
-          return model.update({[this.names.columnNonce]: null}, {where: {[this.names.columnEmail]: email}})
-            .then(function() {
-              successHandler(true);
+          var generatedToken = Tokenizer.random.generateString(this.nonceLength);
+          return model.update({[this.names.columnNonce]: generatedToken}, {where: {[this.names.columnEmail]: email}})
+            .then(function(res) {
+              var updatedRows = res[0];
+              if(updatedRows > 0) {
+                successHandler(generatedToken);
+              } else {
+                successHandler(false);
+              }
             });
         }).bind(this));
       },

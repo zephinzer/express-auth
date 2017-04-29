@@ -11,6 +11,7 @@ describe('expressAuth/Defaults/model/sequelize/config', function() {
         'get',
         'path',
         'names',
+        'nonceLength',
         'model',
         'table',
       ]);

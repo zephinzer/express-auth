@@ -1,10 +1,14 @@
 var Sequelize = require('sequelize');
 var ExpressAuth = require('../../../../../');
+var Tokenizer = require('../../../../../components/tokenizer');
+
+var factory = require('../../../../factory');
 
 describe('expressAuth/Defaults/model/sequelize/handle .forgot ( id : {Number} )', function() {
   var sequelize;
   var sequelizeConfig = ExpressAuth.get(['model', 'sequelize', 'config']);
   var names = ExpressAuth.get(['model', 'sequelize', 'config', 'names']);
+
   var expectedAccount = {
     [names.columnEmail]: 'handle.forgot.test@address.com',
     [names.columnPassword]: 'password',
@@ -16,42 +20,55 @@ describe('expressAuth/Defaults/model/sequelize/handle .forgot ( id : {Number} )'
   );
 
   before(function(done) {
-    ExpressAuth.set(['model', 'sequelize', 'config', 'extraColumns'], {
-      createdAt: {type: Sequelize.DATE, defaultValue: Sequelize.NOW},
-      updatedAt: {type: Sequelize.DATE, defaultValue: Sequelize.NOW},
-    });
-    sequelize = new Sequelize(sequelizeConfig.get());
-    sequelize.authenticate().then(function() {
-      Account = sequelizeConfig.model(sequelize);
-      Account.create(expectedAccount)
-        .then(function(res) {
-          var accountId = res.dataValues.id;
-          expectedAccount.id = accountId;
-          done();
-        })
-        .catch(function(err) { done(err); });
-    }).catch(function(err) { done(err); });
+    factory.create.account(
+      expectedAccount[names.columnEmail],
+      Tokenizer.pbkdf2.create(expectedAccount[names.columnPassword]),
+      expectedAccount[names.columnNonce]
+    ).then(function(account) {
+      expectedAccount.id = account.id;
+      done();
+    }).catch(done);
   });
 
   after(function(done) {
-    Account.destroy({where: expectedAccount})
-      .then(function(res) { done(); })
-      .catch(function(err) { done(err); });
+    factory.destroy.account(expectedAccount.email).then(done).catch(done);
   });
 
-  it('returns true if the provided email was found', function(done) {
+  it('updates the row identified by the provided email with a nonce', function(done) {
+    Account.findAll({where: {[names.columnEmail]: expectedAccount[names.columnEmail]}})
+      .then(function(accounts) {
+        expect(accounts.length).to.be.greaterThan(0);
+        var targetAccount = accounts[0].dataValues;
+        var originalNonce = targetAccount[names.columnNonce];
+        forgot(expectedAccount[names.columnEmail])
+          .then(function(res) {
+            expect(res).to.be.a('string');
+            Account.findAll({where: {[names.columnEmail]: expectedAccount[names.columnEmail]}})
+              .then(function(accounts) {
+                expect(accounts.length).to.be.greaterThan(0);
+                var forgetfulAccount = accounts[0].dataValues;
+                var generatedNonce = forgetfulAccount[names.columnNonce];
+                expect(generatedNonce).to.not.be.null;
+                expect(originalNonce).to.not.deep.equal(generatedNonce);
+                done();
+              });
+          }).catch(done);
+      }).catch(done);
+  });
+
+  it('returns the generated nonce if the provided email was found', function(done) {
     forgot(expectedAccount[names.columnEmail])
       .then(function(res) {
-        expect(res).to.be.true;
+        expect(res).to.be.a('string');
         done();
       })
       .catch(function(err) { done(err); });
   });
 
-  it('returns true if the provided email was not found', function(done) {
+  it('returns false if the provided email was not found', function(done) {
     forgot('un'+expectedAccount[names.columnEmail])
       .then(function(res) {
-        expect(res).to.be.true;
+        expect(res).to.be.false;
         done();
       })
       .catch(function(err) { done(err); });
